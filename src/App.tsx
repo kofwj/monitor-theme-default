@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api, useNodes, type Node } from "@/lib/api"
 
-type Me = { authed: boolean; github: boolean; site_name: string; public_page: boolean }
+type Me = { authed: boolean; github: boolean; site_name: string; public_page: boolean; version?: string }
+
+// The fork this theme is built from, rather than the upstream project: the footer
+// exists so somebody looking at a running hub can find the code that is actually
+// running, and on this deployment that is not upstream.
+const REPO = "https://github.com/kofwj/monitor"
 
 // Split out because recharts is most of this bundle and the list page draws no
 // chart. The landing page is 242 kB rather than 629 kB (77 kB gzipped against
@@ -169,6 +174,26 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* What is running, and where it came from. The version is the hub's, read
+          from /me, not this bundle's: the theme is built and released separately
+          from the hub it renders, so it has no number of its own to show here. A
+          hub older than the field sends none, so the line is assembled from what
+          arrived rather than leaving a separator with nothing on one side. */}
+      <footer className="mx-auto max-w-[1400px] px-4 pb-10 pt-2 sm:px-6">
+        <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+          {me.version && <span className="tnum">v{me.version}</span>}
+          {me.version && <span aria-hidden="true">·</span>}
+          <a
+            href={REPO}
+            target="_blank"
+            rel="noreferrer"
+            className="underline-offset-4 hover:text-foreground hover:underline"
+          >
+            github.com/kofwj/monitor
+          </a>
+        </p>
+      </footer>
     </div>
   )
 }
