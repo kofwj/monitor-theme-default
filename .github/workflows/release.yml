@@ -30,6 +30,18 @@ jobs:
       - run: tar czf theme.tar.gz dist theme.json preview.png
       - run: sha256sum theme.tar.gz | cut -d' ' -f1 | tee theme.tar.gz.sha256
 
+      # A tag pushed to a fork starts no workflow, so the step below never runs
+      # here and the release a pin needs is never created -- observed, not
+      # assumed: pushing v1.0.1 left the run list empty. Uploading the archive
+      # makes a dispatch yield the exact bytes to publish by hand, rather than
+      # whatever a local build happens to produce on another platform.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: theme
+          path: |
+            theme.tar.gz
+            theme.tar.gz.sha256
+
       # A manual dispatch builds and packages without publishing, so the path can
       # be exercised without cutting a release. gh ships on the runner, keeping a
       # third-party action out of the contents:write step.
