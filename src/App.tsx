@@ -14,6 +14,26 @@ type Me = { authed: boolean; github: boolean; site_name: string; public_page: bo
 // running, and on this deployment that is not upstream.
 const REPO = "https://github.com/kofwj/monitor"
 
+/** lucide 1.x dropped brand icons; the same path the panel draws, so the two
+ *  footers match. */
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+      <path d="M9 18c-4.51 2-5-2-7-2" />
+    </svg>
+  )
+}
+
 // Split out because recharts is most of this bundle and the list page draws no
 // chart. The landing page is 242 kB rather than 629 kB (77 kB gzipped against
 // 188 kB), with the rest fetched immediately after it paints.
@@ -116,7 +136,7 @@ export default function App() {
   if (!me.public_page && !me.authed) return null
 
   return (
-    <div className="min-h-svh">
+    <div className="min-h-svh pb-14">
       <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6">
           {/* The site name is the way back to the list, so a node page needs
@@ -175,24 +195,26 @@ export default function App() {
         )}
       </main>
 
-      {/* What is running, and where it came from. The version is the hub's, read
-          from /me, not this bundle's: the theme is built and released separately
-          from the hub it renders, so it has no number of its own to show here. A
-          hub older than the field sends none, so the line is assembled from what
-          arrived rather than leaving a separator with nothing on one side. */}
-      <footer className="mx-auto max-w-[1400px] px-4 pb-10 pt-2 sm:px-6">
-        <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-          {me.version && <span className="tnum">v{me.version}</span>}
-          {me.version && <span aria-hidden="true">·</span>}
-          <a
-            href={REPO}
-            target="_blank"
-            rel="noreferrer"
-            className="underline-offset-4 hover:text-foreground hover:underline"
-          >
-            github.com/kofwj/monitor
-          </a>
-        </p>
+      {/* Pinned to the viewport so a one-node list and a twenty-node list do
+          not place this line at two different heights. The version is the
+          hub's, read from /me, not this bundle's. */}
+      <footer className="pointer-events-none fixed inset-x-0 bottom-0 z-10">
+        <div className="mx-auto flex w-full max-w-[1400px] items-center px-4 py-2.5 sm:px-6">
+          <p className="pointer-events-auto flex items-center gap-x-2 rounded-md bg-background/80 px-2 py-1 text-xs text-muted-foreground backdrop-blur">
+            {me.version && <span className="tnum">v{me.version}</span>}
+            {me.version && <span aria-hidden="true">·</span>}
+            <a
+              href={REPO}
+              target="_blank"
+              rel="noreferrer"
+              title={`GitHub 仓库（${REPO.replace("https://github.com/", "")}）`}
+              aria-label={`GitHub 仓库（${REPO.replace("https://github.com/", "")}）`}
+              className="inline-flex items-center rounded p-0.5 transition-colors hover:text-foreground"
+            >
+              <GitHubIcon className="size-3.5" />
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
   )
